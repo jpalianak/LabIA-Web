@@ -1,67 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta Laboral - LabIA</title>
+    <title>Consulta - AirBiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-50 font-sans text-gray-900">
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- Contenedor principal -->
+    <div class="flex min-h-screen items-center justify-center py-6 px-4 sm:px-6 lg:px-8">
+        <!-- Caja principal -->
+        <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-8 flex flex-col md:flex-row">
+            <!-- Lado izquierdo con logo, nombre del proyecto y selección de ley -->
+            <div class="w-full md:w-1/3 flex flex-col items-center md:items-start mb-8 md:mb-0">
+                <!-- Logo -->
+                <img src="airbiz.png" alt="AirBiz Logo" class="h-24 mb-4">
+                <!-- Nombre del proyecto -->
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">AirBiz</h2>
+                <p class="text-lg text-gray-700 mb-6">Consulta de Leyes Laborales</p>
+                <!-- Selección de ley -->
+                <label for="lawSelect" class="block text-lg text-gray-800 mb-2">Selecciona la ley</label>
+                <select id="lawSelect"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300">
+                    <option value="UOM">Ley 1</option>
+                    <option value="ATE">Ley 2</option>
+                    <option value="UOCRA">Ley 3</option>
+                    <!-- Añadir más opciones según sea necesario -->
+                </select>
+            </div>
 
-    <!-- Header -->
-    <header class="w-full bg-white shadow-lg py-4">
-        <div class="max-w-screen-xl mx-auto flex justify-between items-center px-6">
-            <div class="flex items-center gap-2">
-                <img src="airbiz.png" alt="AirBiz Logo" class="h-10"> <!-- Logo -->
-                <h1 class="text-xl font-semibold text-gray-900">LabIA</h1> <!-- Nombre del Producto -->
+            <!-- Lado derecho con el formulario de consulta -->
+            <div class="w-full md:w-2/3 flex flex-col">
+                <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Consulta sobre Leyes Laborales</h1>
+                <form id="queryForm" class="flex flex-col gap-4">
+                    <textarea id="queryInput"
+                        class="w-full p-4 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+                        placeholder="Escribe tu consulta aquí..." rows="5" required></textarea>
+                    <button type="submit"
+                        class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                        Enviar
+                    </button>
+                </form>
+                <div id="responseBox" class="mt-6 p-4 border border-gray-300 rounded-lg bg-gray-50 hidden">
+                    <p id="responseText" class="text-gray-700"></p>
+                </div>
             </div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex items-center justify-center min-h-screen bg-gray-100 py-8">
-        <div class="w-full max-w-3xl bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Consulta sobre Leyes Laborales</h2>
-
-            <!-- Consulta Form -->
-            <form id="queryForm" class="space-y-6">
-                <div>
-                    <label for="lawSelect" class="block text-lg font-medium text-gray-700">Selecciona la Ley</label>
-                    <select id="lawSelect"
-                        class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="Union Obrera Metalurgica - UOM">Ley 1</option>
-                        <option value="Asociacion trabajadores del Estado - ATE">Ley 2</option>
-                        <option value="Plastico">Ley 3</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="queryInput" class="block text-lg font-medium text-gray-700">Escribe tu consulta</label>
-                    <textarea id="queryInput" rows="5"
-                        class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="Escribe tu consulta aquí..." required></textarea>
-                </div>
-
-                <button type="submit"
-                    class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">Enviar
-                    Consulta</button>
-            </form>
-
-            <!-- Response Box -->
-            <div id="responseBox" class="mt-6 p-4 border border-gray-300 rounded-lg bg-gray-50 hidden">
-                <p id="responseText" class="text-gray-700"></p>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <!-- Footer -->
-    <footer class="w-full bg-gray-900 text-white py-6">
-        <div class="max-w-screen-xl mx-auto text-center">
-            <p class="text-sm">© 2025 AirBiz. Todos los derechos reservados.</p>
-            <p class="text-sm mt-2">Contáctanos: <a href="mailto:contacto@airbiz.com"
-                    class="text-blue-400 hover:text-blue-500">contacto@airbiz.com</a></p>
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>© 2025 AirBiz. Todos los derechos reservados.</p>
+            <p><a href="mailto:contacto@airbiz.com" class="text-blue-400 hover:text-blue-500">contacto@airbiz.com</a>
+            </p>
         </div>
     </footer>
 
@@ -75,7 +69,6 @@
             event.preventDefault(); // Evitar que el formulario se recargue
 
             const query = queryInput.value;
-            const law = document.getElementById('lawSelect').value; // Obtenemos la ley seleccionada
             responseBox.classList.add('hidden'); // Ocultar respuesta previa
 
             try {
@@ -84,13 +77,13 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ query, law }) // Enviar la ley seleccionada junto con la consulta
+                    body: JSON.stringify({ query })
                 });
 
                 if (!res.ok) throw new Error('Error al procesar la solicitud.');
 
                 const data = await res.json();
-                responseText.textContent = data.answer || 'Respuesta recibida correctamente.';
+                responseText.textContent = data.response || 'Respuesta recibida correctamente.';
                 responseBox.classList.remove('hidden');
             } catch (error) {
                 responseText.textContent = 'Hubo un problema con la solicitud. Intenta nuevamente más tarde.';
@@ -98,7 +91,6 @@
             }
         });
     </script>
-
 </body>
 
 </html>
