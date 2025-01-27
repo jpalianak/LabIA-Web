@@ -4,26 +4,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta</title>
+    <title>Consulta Laboral - LabIA</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg">
-        <h1 class="text-2xl font-bold text-center mb-4">Consulta</h1>
-        <form id="queryForm" class="flex flex-col gap-4">
-            <textarea id="queryInput"
-                class="w-full p-4 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
-                placeholder="Escribe tu consulta aquí..." rows="5" required></textarea>
-            <button type="submit"
-                class="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">
-                Enviar
-            </button>
-        </form>
-        <div id="responseBox" class="mt-6 p-4 border border-gray-300 rounded-lg bg-gray-50 hidden">
-            <p id="responseText" class="text-gray-700"></p>
+<body class="bg-gray-50 font-sans text-gray-900">
+
+    <!-- Header -->
+    <header class="w-full bg-white shadow-lg py-4">
+        <div class="max-w-screen-xl mx-auto flex justify-between items-center px-6">
+            <div class="flex items-center gap-2">
+                <img src="airbiz.png" alt="AirBiz Logo" class="h-10"> <!-- Logo -->
+                <h1 class="text-xl font-semibold text-gray-900">LabIA</h1> <!-- Nombre del Producto -->
+            </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex items-center justify-center min-h-screen bg-gray-100 py-8">
+        <div class="w-full max-w-3xl bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Consulta sobre Leyes Laborales</h2>
+
+            <!-- Consulta Form -->
+            <form id="queryForm" class="space-y-6">
+                <div>
+                    <label for="lawSelect" class="block text-lg font-medium text-gray-700">Selecciona la Ley</label>
+                    <select id="lawSelect"
+                        class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="Union Obrera Metalurgica - UOM">Ley 1</option>
+                        <option value="Asociacion trabajadores del Estado - ATE">Ley 2</option>
+                        <option value="Plastico">Ley 3</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="queryInput" class="block text-lg font-medium text-gray-700">Escribe tu consulta</label>
+                    <textarea id="queryInput" rows="5"
+                        class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        placeholder="Escribe tu consulta aquí..." required></textarea>
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">Enviar
+                    Consulta</button>
+            </form>
+
+            <!-- Response Box -->
+            <div id="responseBox" class="mt-6 p-4 border border-gray-300 rounded-lg bg-gray-50 hidden">
+                <p id="responseText" class="text-gray-700"></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-gray-900 text-white py-6">
+        <div class="max-w-screen-xl mx-auto text-center">
+            <p class="text-sm">© 2025 AirBiz. Todos los derechos reservados.</p>
+            <p class="text-sm mt-2">Contáctanos: <a href="mailto:contacto@airbiz.com"
+                    class="text-blue-400 hover:text-blue-500">contacto@airbiz.com</a></p>
+        </div>
+    </footer>
 
     <script>
         const form = document.getElementById('queryForm');
@@ -35,6 +75,7 @@
             event.preventDefault(); // Evitar que el formulario se recargue
 
             const query = queryInput.value;
+            const law = document.getElementById('lawSelect').value; // Obtenemos la ley seleccionada
             responseBox.classList.add('hidden'); // Ocultar respuesta previa
 
             try {
@@ -43,20 +84,13 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ query })
+                    body: JSON.stringify({ query, law }) // Enviar la ley seleccionada junto con la consulta
                 });
 
                 if (!res.ok) throw new Error('Error al procesar la solicitud.');
 
                 const data = await res.json();
-
-                // Aquí es donde se maneja la respuesta de Lambda, ahora accedemos a "answer"
-                if (data.answer) {
-                    responseText.textContent = data.answer; // Mostrar la respuesta que viene de Lambda
-                } else {
-                    responseText.textContent = 'Respuesta vacía de Lambda. Verifique la configuración de la función.';
-                }
-
+                responseText.textContent = data.answer || 'Respuesta recibida correctamente.';
                 responseBox.classList.remove('hidden');
             } catch (error) {
                 responseText.textContent = 'Hubo un problema con la solicitud. Intenta nuevamente más tarde.';
@@ -64,6 +98,7 @@
             }
         });
     </script>
+
 </body>
 
 </html>
