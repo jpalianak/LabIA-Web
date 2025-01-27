@@ -8,41 +8,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-50 font-sans antialiased">
+<body class="bg-gray-100 font-sans">
+
     <!-- Contenedor principal -->
-    <div class="flex min-h-screen items-center justify-center py-6 px-4 sm:px-6 lg:px-8">
+    <div class="flex min-h-screen items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
         <!-- Caja principal -->
-        <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-8 flex flex-col md:flex-row">
+        <div class="w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden">
             <!-- Lado izquierdo con logo, nombre del proyecto y selección de ley -->
-            <div class="w-full md:w-1/3 flex flex-col items-center md:items-start mb-8 md:mb-0">
+            <div class="bg-blue-700 text-white px-6 py-10 flex flex-col items-center space-y-6">
                 <!-- Logo -->
-                <img src="airbiz.png" alt="AirBiz Logo" class="h-24 mb-4">
+                <img src="images/logo.png" alt="AirBiz Logo" class="h-32 mb-4">
                 <!-- Nombre del proyecto -->
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">AirBiz</h2>
-                <p class="text-lg text-gray-700 mb-6">Consulta de Leyes Laborales</p>
+                <h2 class="text-3xl font-semibold">AirBiz</h2>
+                <p class="text-lg">Consulta de Leyes Laborales</p>
                 <!-- Selección de ley -->
-                <label for="lawSelect" class="block text-lg text-gray-800 mb-2">Selecciona la ley</label>
-                <select id="lawSelect"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300">
-                    <option value="UOM">Ley 1</option>
-                    <option value="ATE">Ley 2</option>
-                    <option value="UOCRA">Ley 3</option>
-                    <!-- Añadir más opciones según sea necesario -->
-                </select>
+                <div class="w-full">
+                    <label for="lawSelect" class="block text-sm font-medium">Selecciona la ley</label>
+                    <select id="lawSelect"
+                        class="mt-2 w-full p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="ley1">Ley 1</option>
+                        <option value="ley2">Ley 2</option>
+                        <option value="ley3">Ley 3</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Lado derecho con el formulario de consulta -->
-            <div class="w-full md:w-2/3 flex flex-col">
-                <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Consulta sobre Leyes Laborales</h1>
-                <form id="queryForm" class="flex flex-col gap-4">
-                    <textarea id="queryInput"
-                        class="w-full p-4 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
-                        placeholder="Escribe tu consulta aquí..." rows="5" required></textarea>
-                    <button type="submit"
-                        class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
-                        Enviar
-                    </button>
+            <div class="bg-white p-10">
+                <h1 class="text-3xl font-bold text-center text-gray-900 mb-6">Consulta sobre Leyes Laborales</h1>
+                <form id="queryForm" class="space-y-6">
+                    <div>
+                        <textarea id="queryInput"
+                            class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            placeholder="Escribe tu consulta aquí..." rows="5" required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit"
+                            class="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                            Enviar
+                        </button>
+                    </div>
                 </form>
+
                 <div id="responseBox" class="mt-6 p-4 border border-gray-300 rounded-lg bg-gray-50 hidden">
                     <p id="responseText" class="text-gray-700"></p>
                 </div>
@@ -51,9 +58,9 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-4">
+    <footer class="bg-gray-900 text-white py-6 mt-12">
         <div class="container mx-auto text-center">
-            <p>© 2025 AirBiz. Todos los derechos reservados.</p>
+            <p class="text-sm">© 2025 AirBiz. Todos los derechos reservados.</p>
             <p><a href="mailto:contacto@airbiz.com" class="text-blue-400 hover:text-blue-500">contacto@airbiz.com</a>
             </p>
         </div>
@@ -91,6 +98,7 @@
             }
         });
     </script>
+
 </body>
 
 </html>
