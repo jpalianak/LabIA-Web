@@ -49,7 +49,14 @@
                 if (!res.ok) throw new Error('Error al procesar la solicitud.');
 
                 const data = await res.json();
-                responseText.textContent = data.response || 'Respuesta recibida correctamente.';
+
+                // Aquí es donde se maneja la respuesta de Lambda, ahora accedemos a "answer"
+                if (data.answer) {
+                    responseText.textContent = data.answer; // Mostrar la respuesta que viene de Lambda
+                } else {
+                    responseText.textContent = 'Respuesta vacía de Lambda. Verifique la configuración de la función.';
+                }
+
                 responseBox.classList.remove('hidden');
             } catch (error) {
                 responseText.textContent = 'Hubo un problema con la solicitud. Intenta nuevamente más tarde.';
