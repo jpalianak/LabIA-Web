@@ -13,7 +13,10 @@
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="w-1/6 bg-white shadow-md p-4">
-            <h1 class="text-xl font-bold text-blue-600 mb-4">LabIA - AirBiz</h1>
+            <div class="flex flex-col items-center mb-6">
+                <img src="airbiz.png" alt="AirBiz Logo" class="h-16 w-auto mb-4">
+                <h1 class="text-xl font-bold text-blue-600 text-center">LabIA - AirBiz</h1>
+            </div>
             <label for="lawSelect" class="block text-gray-700 font-semibold mb-2">Seleccionar Ley:</label>
             <select id="lawSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300">
                 <option value="">Seleccione una ley...</option>
@@ -32,7 +35,7 @@
             </div>
             <!-- Query Form -->
             <form id="queryForm"
-                class="fixed bottom-0 left-0 right-0 w-5/6 mx-auto bg-gray-50 p-4 flex items-center justify-between shadow-lg">
+                class="fixed bottom-0 left-[16.67%] right-0 w-[70%] mx-auto bg-gray-50 p-4 flex items-center justify-between shadow-lg rounded-t-lg">
                 <textarea id="queryInput"
                     class="w-4/5 p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300 resize-none"
                     placeholder="Escribe tu consulta aquí..." rows="1" required></textarea>
