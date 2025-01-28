@@ -27,7 +27,8 @@
         <main class="w-5/6 p-6">
             <div id="chatContainer" class="space-y-6">
                 <!-- Placeholder for questions and answers -->
-                <p class="text-gray-600">Inicia una consulta seleccionando una ley y escribiendo tu pregunta.</p>
+                <p class="text-gray-600 text-center">Inicia una consulta seleccionando una ley y escribiendo tu
+                    pregunta.</p>
             </div>
             <!-- Query Form -->
             <form id="queryForm" class="mt-6 space-y-4">
@@ -62,7 +63,7 @@
 
             // Add the query to the chat
             const questionBox = document.createElement('div');
-            questionBox.className = 'bg-gray-200 p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] ml-auto';
+            questionBox.className = 'bg-gray-200 p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mx-auto';
             questionBox.innerHTML = `<strong>Pregunta:</strong><p>${query}</p>`;
             chatContainer.appendChild(questionBox);
 
@@ -84,12 +85,12 @@
 
                 // Add the response to the chat
                 const responseBox = document.createElement('div');
-                responseBox.className = 'bg-white p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mr-auto';
+                responseBox.className = 'bg-white p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mx-auto';
                 responseBox.innerHTML = `<strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>`;
                 chatContainer.appendChild(responseBox);
             } catch (error) {
                 const errorBox = document.createElement('div');
-                errorBox.className = 'bg-red-200 p-4 rounded-lg shadow-md text-red-700 max-w-[60%] mr-auto';
+                errorBox.className = 'bg-red-200 p-4 rounded-lg shadow-md text-red-700 max-w-[60%] mx-auto';
                 errorBox.innerHTML = `<strong>Error:</strong><p>Hubo un problema con la solicitud. Intenta nuevamente más tarde.</p>`;
                 chatContainer.appendChild(errorBox);
             }
