@@ -12,44 +12,49 @@
     <!-- Main Layout -->
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-1/6 bg-white shadow-md p-4 flex flex-col">
-            <div class="flex flex-col items-center">
-                <img src="airbiz.png" alt="AirBiz Logo" class="h-[120px] w-auto mb-2">
-                <h1 class="text-2xl font-bold text-black text-center mb-2">LabIA</h1>
+        <aside class="relative w-1/6 bg-gray-900 text-white shadow-md p-4 flex flex-col">
+            <div class="flex flex-col items-center w-full mb-6">
+                <h1 class="text-7xl font-bold font-sans text-gray-200 text-center mt-4">LabIA</h1>
+                <p class="text-gray-200 text-center text-sm">Tu asistente legal inteligente</p>
             </div>
-            <!-- Ley Selection Fixed at the Top -->
-            <div class="mt-10">
-                <label for="lawSelect" class="block text-gray-700 font-semibold mb-2">Seleccione un contrato de
-                    trabajo:</label>
-                <select id="lawSelect"
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300">
+
+            <!-- Contrato Selection in a Box -->
+            <div class="border border-gray-300 p-4 rounded-lg mt-4">
+                <label for="contractSelect" class="block text-gray-400 mb-2">Seleccione un contrato de trabajo:</label>
+                <select id="contractSelect"
+                    class="w-full p-2 border border-gray-700 bg-gray-700 text-gray-400 rounded-lg focus:ring focus:ring-blue-300">
                     <option value="">Seleccione...</option>
-                    <option value="ley1">Contrato 1</option>
-                    <option value="ley2">Contrato 2</option>
-                    <option value="ley3">Contrato 3</option>
+                    <option value="contract1">Contrato 1</option>
+                    <option value="contract2">Contrato 2</option>
+                    <option value="contract3">Contrato 3</option>
                 </select>
             </div>
+
+            <!-- Logo en la parte inferior -->
+            <img src="airbiz.png" alt="AirBiz Logo"
+                class="absolute bottom-4 left-6 w-24 h-auto filter invert brightness-100 grayscale">
+
         </aside>
 
         <!-- Chat Area -->
-        <main class="w-5/6 p-6 relative flex flex-col">
+        <main class="w-5/6 bg-gray-800 text-white p-6 relative flex flex-col">
             <!-- Chat Container -->
             <div id="chatContainer" class="space-y-6 pb-20 mb-6 overflow-y-auto"
                 style="max-height: calc(100vh - 200px);">
-                <p class="text-gray-600 text-center">Inicia una consulta seleccionando un contrato de trabajo y
+                <p class="text-gray-400 text-center">Inicia una consulta seleccionando un contrato de trabajo y
                     escribiendo tu pregunta.</p>
             </div>
 
             <!-- Query Form Fixed at the Bottom -->
             <form id="queryForm"
-                class="fixed bottom-14 left-[16.67%] right-0 w-[70%] mx-auto bg-white p-4 flex items-center justify-between shadow-lg rounded-lg">
+                class="fixed bottom-14 left-[16.67%] right-0 w-[70%] mx-auto bg-gray-800 p-4 flex items-center justify-between rounded-lg">
                 <textarea id="queryInput"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300 resize-none bg-transparent"
+                    class="w-full p-3 border border-gray-800 bg-gray-700 text-gray-200 rounded-lg focus:ring focus:ring-blue-300 resize-none"
                     placeholder="Escribe tu consulta aquí..." rows="1" required></textarea>
             </form>
 
             <!-- Footer -->
-            <footer class="fixed bottom-0 left-1/6 w-5/6 text-center p-2 text-gray-600 text-sm">
+            <footer class="fixed bottom-0 left-1/6 w-5/6 text-center p-2 text-gray-400 text-sm">
                 © 2025 AirBiz. Todos los derechos reservados.
             </footer>
         </main>
@@ -58,29 +63,30 @@
     <script>
         const form = document.getElementById('queryForm');
         const queryInput = document.getElementById('queryInput');
-        const lawSelect = document.getElementById('lawSelect');
+        const contractSelect = document.getElementById('contractSelect');
         const chatContainer = document.getElementById('chatContainer');
 
-        // Listen for "Enter" key press to submit the form
         queryInput.addEventListener('keydown', async (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault(); // Prevents adding a new line
+                event.preventDefault();
 
-                const law = lawSelect.value;
-                const query = queryInput.value;
+                const contract = contractSelect.value;
+                const query = queryInput.value.trim();
 
-                if (!law) {
-                    alert('Por favor, selecciona una ley antes de realizar la consulta.');
+                if (!contract) {
+                    alert('Por favor, selecciona un contrato antes de realizar la consulta.');
                     return;
                 }
 
-                // Add the query to the chat
+                if (!query) {
+                    return;
+                }
+
                 const questionBox = document.createElement('div');
-                questionBox.className = 'bg-gray-200 p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] ml-auto mr-20';
+                questionBox.className = 'bg-gray-600 p-4 rounded-lg shadow-md text-gray-200 max-w-[60%] ml-auto mr-20';
                 questionBox.innerHTML = `<strong>Pregunta:</strong><p>${query}</p>`;
                 chatContainer.appendChild(questionBox);
 
-                // Clear the input
                 queryInput.value = '';
 
                 try {
@@ -89,16 +95,15 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ query, law })
+                        body: JSON.stringify({ query, contract })
                     });
 
                     if (!res.ok) throw new Error('Error al procesar la solicitud.');
 
                     const data = await res.json();
 
-                    // Add the response to the chat
                     const responseBox = document.createElement('div');
-                    responseBox.className = 'bg-white p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mr-auto ml-20';
+                    responseBox.className = 'bg-gray-700 p-4 rounded-lg shadow-md text-gray-200 max-w-[60%] mr-auto ml-20';
                     responseBox.innerHTML = `<strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>`;
                     chatContainer.appendChild(responseBox);
                 } catch (error) {
@@ -108,7 +113,6 @@
                     chatContainer.appendChild(errorBox);
                 }
 
-                // Scroll to the bottom of the chat
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
         });
