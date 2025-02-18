@@ -61,6 +61,21 @@
     </div>
 
     <script>
+        // Función para generar un UUID (identificador único)
+        function generateSessionId() {
+            return crypto.randomUUID(); // Requiere navegadores modernos
+        }
+
+        // Obtener o crear el session_id
+        function getSessionId() {
+            let sessionId = localStorage.getItem('session_id');
+            if (!sessionId) {
+                sessionId = generateSessionId();
+                localStorage.setItem('session_id', sessionId);
+            }
+            return sessionId;
+        }
+
         const form = document.getElementById('queryForm');
         const queryInput = document.getElementById('queryInput');
         const contractSelect = document.getElementById('contractSelect');
@@ -72,6 +87,7 @@
 
                 const contract = contractSelect.value;
                 const query = queryInput.value.trim();
+                const sessionId = getSessionId(); // Obtener el session_id
 
                 if (!contract) {
                     alert('Por favor, selecciona un contrato antes de realizar la consulta.');
@@ -82,9 +98,10 @@
                     return;
                 }
 
+                // Mostrar la pregunta en el chat
                 const questionBox = document.createElement('div');
                 questionBox.className = 'bg-gray-200 p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] ml-auto mr-20';
-                questionBox.innerHTML = <strong>Pregunta:</strong><p>${query}</p>;
+                questionBox.innerHTML = `<strong>Pregunta:</strong><p>${query}</p>`;
                 chatContainer.appendChild(questionBox);
 
                 queryInput.value = '';
@@ -95,31 +112,38 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ query, contract })
+                        body: JSON.stringify({ query, contract, session_id: sessionId }) // Se envía el session_id
                     });
 
                     if (!res.ok) throw new Error('Error al procesar la solicitud.');
 
                     const data = await res.json();
 
+                    // Mostrar la respuesta en el chat
                     const responseBox = document.createElement('div');
                     responseBox.className = 'bg-white p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mr-auto ml-20';
-                    responseBox.innerHTML = <strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>;
+                    responseBox.innerHTML = `<strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>`;
                     chatContainer.appendChild(responseBox);
                 } catch (error) {
+                    // Mostrar un mensaje de error
                     const errorBox = document.createElement('div');
                     errorBox.className = 'bg-red-200 p-4 rounded-lg shadow-md text-red-700 max-w-[60%] mx-auto';
-                    errorBox.innerHTML = <strong>Error:</strong><p>Hubo un problema con la solicitud. Intenta nuevamente más tarde.</p>;
+                    errorBox.innerHTML = `<strong>Error:</strong><p>Hubo un problema con la solicitud. Intenta nuevamente más tarde.</p>`;
                     chatContainer.appendChild(errorBox);
                 }
 
+                // Hacer scroll al final del chat
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
         });
     </script>
 </body>
 
-</html> 
+</html>
+
+</body>
+
+</html>
 
 
 
