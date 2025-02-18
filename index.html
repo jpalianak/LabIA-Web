@@ -5,10 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabIA - AirBiz</title>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.tailwindcss.com https://apis.google.com;">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Cargar la librería de Google -->
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 
 <body class="bg-gray-100 font-sans">
@@ -41,11 +38,6 @@
 
         <!-- Chat Area -->
         <main class="w-5/6 bg-gray-800 text-white p-6 relative flex flex-col">
-            <!-- Botón de inicio de sesión de Google (ubicado en la parte superior derecha) -->
-            <div class="absolute top-4 right-4">
-                <button id="googleSignInBtn" class="bg-blue-200 text-black py-2 px-4 rounded-lg">Iniciar sesión con Google</button>
-            </div>
-
             <!-- Chat Container -->
             <div id="chatContainer" class="space-y-6 pb-20 mb-6 overflow-y-auto"
                 style="max-height: calc(100vh - 200px);">
@@ -69,72 +61,63 @@
     </div>
 
     <script>
-        // Función para inicializar la API de Google
-        function onLoad() {
-            console.log('Google API cargado correctamente');
-            gapi.load('auth2', function () {
-                console.log('Cargando Google Auth2...');
-                gapi.auth2.init({
-                    client_id: '554337460533-88ds3l81v3rmhufv2td4aq9qq26gts6n.apps.googleusercontent.com' // Reemplaza con tu Client ID
-                }).then(function () {
-                    console.log('Google Auth2 cargado correctamente');
-                    // Verificar que el botón está en el DOM
-                    console.log(document.getElementById('googleSignInBtn'));
-                    attachSignin(document.getElementById('googleSignInBtn'));
-                }).catch(function (error) {
-                    console.error('Error al cargar Google Auth2:', error);
-                });
-            });
-        }
+        const form = document.getElementById('queryForm');
+        const queryInput = document.getElementById('queryInput');
+        const contractSelect = document.getElementById('contractSelect');
+        const chatContainer = document.getElementById('chatContainer');
 
-        // Función para asociar el botón de login con el manejador de Google Sign-In
-        function attachSignin(element) {
-            gapi.auth2.getAuthInstance().attachClickHandler(element, {}, function(googleUser) {
-                var profile = googleUser.getBasicProfile();
-                console.log("ID: " + profile.getId()); // ID de usuario
-                console.log("Nombre: " + profile.getName()); // Nombre de usuario
-                console.log("Email: " + profile.getEmail()); // Email del usuario
+        queryInput.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
 
-                // Aquí puedes agregar lo que quieras hacer después de que el usuario inicie sesión
-                // Ejemplo: Redirigir o guardar datos del usuario en tu aplicación
-            }, function(error) {
-                console.log(JSON.stringify(error, null, 2));
-            });
-        }
+                const contract = contractSelect.value;
+                const query = queryInput.value.trim();
 
-        // Captura la tecla Enter y envía la consulta
-        document.getElementById('queryInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault(); // Evita añadir una nueva línea
-                sendQuery(); // Llama a la función de envío
+                if (!contract) {
+                    alert('Por favor, selecciona un contrato antes de realizar la consulta.');
+                    return;
+                }
+
+                if (!query) {
+                    return;
+                }
+
+                const questionBox = document.createElement('div');
+                questionBox.className = 'bg-gray-200 p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] ml-auto mr-20';
+                questionBox.innerHTML = <strong>Pregunta:</strong><p>${query}</p>;
+                chatContainer.appendChild(questionBox);
+
+                queryInput.value = '';
+
+                try {
+                    const res = await fetch('https://fzfi0gugng.execute-api.us-east-1.amazonaws.com/Prod/query', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ query, contract })
+                    });
+
+                    if (!res.ok) throw new Error('Error al procesar la solicitud.');
+
+                    const data = await res.json();
+
+                    const responseBox = document.createElement('div');
+                    responseBox.className = 'bg-white p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mr-auto ml-20';
+                    responseBox.innerHTML = <strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>;
+                    chatContainer.appendChild(responseBox);
+                } catch (error) {
+                    const errorBox = document.createElement('div');
+                    errorBox.className = 'bg-red-200 p-4 rounded-lg shadow-md text-red-700 max-w-[60%] mx-auto';
+                    errorBox.innerHTML = <strong>Error:</strong><p>Hubo un problema con la solicitud. Intenta nuevamente más tarde.</p>;
+                    chatContainer.appendChild(errorBox);
+                }
+
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             }
         });
-
-        function sendQuery() {
-            const queryInput = document.getElementById('queryInput');
-            const query = queryInput.value.trim();
-            
-            if (query !== '') {
-                // Aquí puedes agregar lo que quieras hacer después de que el usuario envíe la consulta
-                console.log('Consulta enviada: ' + query);
-
-                // Limpia el campo de texto después de enviar la consulta
-                queryInput.value = '';
-                
-                // Opcionalmente, puedes agregar la consulta al chat (contenedor de chat)
-                const chatContainer = document.getElementById('chatContainer');
-                const newMessage = document.createElement('p');
-                newMessage.textContent = query;
-                chatContainer.appendChild(newMessage);
-            }
-        }
-
-        // Cargar la API de Google cuando el script haya sido cargado
-        window.onload = onLoad;
     </script>
 </body>
-
-</html>
 
 
 
