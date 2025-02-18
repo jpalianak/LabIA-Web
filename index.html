@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +7,9 @@
     
     <!-- Cargar el script de Google API -->
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-gray-100 font-sans">
     <!-- Main Layout -->
     <div class="flex min-h-screen">
@@ -68,21 +66,6 @@
     </div>
 
     <script>
-        // Función para generar un UUID (identificador único)
-        function generateSessionId() {
-            return crypto.randomUUID(); // Requiere navegadores modernos
-        }
-
-        // Obtener o crear el session_id
-        function getSessionId() {
-            let sessionId = localStorage.getItem('session_id');
-            if (!sessionId) {
-                sessionId = generateSessionId();
-                localStorage.setItem('session_id', sessionId);
-            }
-            return sessionId;
-        }
-
         // Función para manejar el inicio de sesión
         function onSignIn(googleUser) {
             var profile = googleUser.getBasicProfile();
@@ -99,15 +82,26 @@
             document.getElementById('chatContainer').innerHTML = `<p>Bienvenido, ${profile.getName()}!</p>`;
         }
 
-        // Función para cerrar sesión
-        function signOut() {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function() {
-                console.log('Usuario desconectado');
-                localStorage.removeItem('google_id_token');
-            });
+        // Inicialización de la API de Google (si es necesario)
+        gapi.load('auth2', function() {
+            gapi.auth2.init();
+        });
+        
+        // Función para generar un UUID (identificador único)
+        function generateSessionId() {
+            return crypto.randomUUID(); // Requiere navegadores modernos
         }
 
+        // Obtener o crear el session_id
+        function getSessionId() {
+            let sessionId = localStorage.getItem('session_id');
+            if (!sessionId) {
+                sessionId = generateSessionId();
+                localStorage.setItem('session_id', sessionId);
+            }
+            return sessionId;
+        }
+        
         const form = document.getElementById('queryForm');
         const queryInput = document.getElementById('queryInput');
         const contractSelect = document.getElementById('contractSelect');
@@ -177,7 +171,7 @@
         });
     </script>
 </body>
-
 </html>
+
 
 
