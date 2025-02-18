@@ -1,22 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabIA - AirBiz</title>
-    
-    <!-- Cargar el script de Google API -->
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-
-    <script>
-    // Verificar si la API se cargó correctamente
-    window.onload = function() {
-        console.log('Google API cargado correctamente');
-    };
-    </script>
-
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cargar la librería de Google -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <!-- Main Layout -->
     <div class="flex min-h-screen">
@@ -25,6 +18,11 @@
             <div class="flex flex-col items-center w-full mb-6">
                 <h1 class="text-7xl font-bold font-sans text-gray-200 text-center mt-4">LabIA</h1>
                 <p class="text-gray-200 text-center text-sm">Tu asistente legal inteligente</p>
+            </div>
+
+            <!-- Botón de inicio de sesión de Google -->
+            <div class="text-center mt-4">
+                <button id="googleSignInBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Iniciar sesión con Google</button>
             </div>
 
             <!-- Contrato Selection in a Box -->
@@ -54,9 +52,6 @@
                     escribiendo tu pregunta.</p>
             </div>
 
-            <!-- Botón de inicio de sesión de Google -->
-            <div class="g-signin2" data-onsuccess="onSignIn"></div>
-
             <!-- Query Form Fixed at the Bottom -->
             <form id="queryForm"
                 class="fixed bottom-14 left-[16.67%] right-0 w-[70%] mx-auto bg-gray-800 p-4 flex items-center justify-between rounded-lg">
@@ -73,112 +68,44 @@
     </div>
 
     <script>
-        // Función para manejar el inicio de sesión
-        function onSignIn(googleUser) {
-            var profile = googleUser.getBasicProfile();
-            var idToken = googleUser.getAuthResponse().id_token;
-
-            // Guardar el token en el almacenamiento local
-            localStorage.setItem('google_id_token', idToken);
-
-            // También puedes obtener el nombre y correo del usuario si los necesitas
-            console.log('Nombre: ' + profile.getName());
-            console.log('Correo: ' + profile.getEmail());
-
-            // Cambiar la interfaz de usuario o hacer una redirección después de iniciar sesión
-            document.getElementById('chatContainer').innerHTML = `<p>Bienvenido, ${profile.getName()}!</p>`;
+        // Función para inicializar la API de Google
+        function onLoad() {
+            console.log('Google API cargado correctamente');
+            
+            gapi.load('auth2', function() {
+                gapi.auth2.init({
+                    client_id: 'TU_CLIENT_ID.apps.googleusercontent.com' // Cambia con tu Client ID de Google
+                }).then(function() {
+                    console.log('Google Auth2 cargado correctamente');
+                    attachSignin(document.getElementById('googleSignInBtn')); // Agregar el evento de clic al botón
+                }).catch(function(error) {
+                    console.error('Error al cargar Google Auth2:', error);
+                });
+            });
         }
 
-        // Inicialización de la API de Google (si es necesario)
-        gapi.load('auth2', function() {
-            gapi.auth2.init();
-        });
-        
-        // Función para generar un UUID (identificador único)
-        function generateSessionId() {
-            return crypto.randomUUID(); // Requiere navegadores modernos
+        // Función para asociar el botón de login con el manejador de Google Sign-In
+        function attachSignin(element) {
+            gapi.auth2.getAuthInstance().attachClickHandler(element, {}, function(googleUser) {
+                var profile = googleUser.getBasicProfile();
+                console.log("ID: " + profile.getId()); // ID de usuario
+                console.log("Nombre: " + profile.getName()); // Nombre de usuario
+                console.log("Email: " + profile.getEmail()); // Email del usuario
+
+                // Aquí puedes agregar lo que quieras hacer después de que el usuario inicie sesión
+                // Ejemplo: Redirigir o guardar datos del usuario en tu aplicación
+            }, function(error) {
+                console.log(JSON.stringify(error, null, 2));
+            });
         }
 
-        // Obtener o crear el session_id
-        function getSessionId() {
-            let sessionId = localStorage.getItem('session_id');
-            if (!sessionId) {
-                sessionId = generateSessionId();
-                localStorage.setItem('session_id', sessionId);
-            }
-            return sessionId;
-        }
-        
-        const form = document.getElementById('queryForm');
-        const queryInput = document.getElementById('queryInput');
-        const contractSelect = document.getElementById('contractSelect');
-        const chatContainer = document.getElementById('chatContainer');
-
-        queryInput.addEventListener('keydown', async (event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-
-                // Verifica si el usuario está autenticado
-                const idToken = localStorage.getItem('google_id_token');
-                if (!idToken) {
-                    alert('Por favor, inicia sesión con Google para continuar.');
-                    return;
-                }
-
-                const contract = contractSelect.value;
-                const query = queryInput.value.trim();
-                const sessionId = getSessionId(); // Obtener el session_id
-
-                if (!contract) {
-                    alert('Por favor, selecciona un contrato antes de realizar la consulta.');
-                    return;
-                }
-
-                if (!query) {
-                    return;
-                }
-
-                // Mostrar la pregunta en el chat
-                const questionBox = document.createElement('div');
-                questionBox.className = 'bg-gray-200 p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] ml-auto mr-20';
-                questionBox.innerHTML = `<strong>Pregunta:</strong><p>${query}</p>`;
-                chatContainer.appendChild(questionBox);
-
-                queryInput.value = '';
-
-                try {
-                    const res = await fetch('https://fzfi0gugng.execute-api.us-east-1.amazonaws.com/Prod/query', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ query, contract, session_id: sessionId, id_token: idToken }) // Enviar el token junto con la consulta
-                    });
-
-                    if (!res.ok) throw new Error('Error al procesar la solicitud.');
-
-                    const data = await res.json();
-
-                    // Mostrar la respuesta en el chat
-                    const responseBox = document.createElement('div');
-                    responseBox.className = 'bg-white p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mr-auto ml-20';
-                    responseBox.innerHTML = `<strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>`;
-                    chatContainer.appendChild(responseBox);
-                } catch (error) {
-                    // Mostrar un mensaje de error
-                    const errorBox = document.createElement('div');
-                    errorBox.className = 'bg-red-200 p-4 rounded-lg shadow-md text-red-700 max-w-[60%] mx-auto';
-                    errorBox.innerHTML = `<strong>Error:</strong><p>Hubo un problema con la solicitud. Intenta nuevamente más tarde.</p>`;
-                    chatContainer.appendChild(errorBox);
-                }
-
-                // Hacer scroll al final del chat
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-        });
+        // Cargar la API de Google cuando el script haya sido cargado
+        window.onload = onLoad;
     </script>
 </body>
+
 </html>
+
 
 
 
