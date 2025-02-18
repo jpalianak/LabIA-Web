@@ -21,6 +21,11 @@
                 <p class="text-gray-200 text-center text-sm">Tu asistente legal inteligente</p>
             </div>
 
+            <!-- Botón de inicio de sesión de Google -->
+            <div class="text-center mt-4">
+                <button id="googleSignInBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Iniciar sesión con Google</button>
+            </div>
+
             <!-- Contrato Selection in a Box -->
             <div class="border border-gray-300 p-4 rounded-lg mt-4">
                 <label for="contractSelect" class="block text-gray-400 mb-2">Seleccione un contrato de trabajo:</label>
@@ -63,11 +68,6 @@
         </main>
     </div>
 
-    <!-- Botón de inicio de sesión de Google (Posicionado en la parte superior derecha) -->
-    <div class="fixed top-6 right-6 z-10">
-        <button id="googleSignInBtn" class="bg-blue-200 text-black py-2 px-4 rounded-lg">Iniciar sesión con Google</button>
-    </div>
-
     <script>
         // Función para inicializar la API de Google
         function onLoad() {
@@ -102,12 +102,40 @@
             });
         }
 
+        // Captura la tecla Enter y envía la consulta
+        document.getElementById('queryInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Evita añadir una nueva línea
+                sendQuery(); // Llama a la función de envío
+            }
+        });
+
+        function sendQuery() {
+            const queryInput = document.getElementById('queryInput');
+            const query = queryInput.value.trim();
+            
+            if (query !== '') {
+                // Aquí puedes agregar lo que quieras hacer después de que el usuario envíe la consulta
+                console.log('Consulta enviada: ' + query);
+
+                // Limpia el campo de texto después de enviar la consulta
+                queryInput.value = '';
+                
+                // Opcionalmente, puedes agregar la consulta al chat (contenedor de chat)
+                const chatContainer = document.getElementById('chatContainer');
+                const newMessage = document.createElement('p');
+                newMessage.textContent = query;
+                chatContainer.appendChild(newMessage);
+            }
+        }
+
         // Cargar la API de Google cuando el script haya sido cargado
         window.onload = onLoad;
     </script>
 </body>
 
 </html>
+
 
 
 
