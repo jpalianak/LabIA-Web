@@ -129,7 +129,7 @@
 
                     // Mostrar la respuesta en el chat
                     const responseBox = document.createElement('div');
-                    responseBox.className = 'bg-white p-4 rounded-lg shadow-md text-gray-700 max-w-[60%] mr-auto ml-20';
+                    responseBox.className = 'bg-gray-700 p-4 rounded-lg shadow-md text-gray-200 max-w-[60%] mr-auto ml-20';
                     responseBox.innerHTML = `<strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>`;
                     chatContainer.appendChild(responseBox);
                 } catch (error) {
