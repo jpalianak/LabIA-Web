@@ -21,11 +21,6 @@
                 <p class="text-gray-200 text-center text-sm">Tu asistente legal inteligente</p>
             </div>
 
-            <!-- Botón de inicio de sesión de Google -->
-            <div class="text-center mt-4">
-                <button id="googleSignInBtn" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Iniciar sesión con Google</button>
-            </div>
-
             <!-- Contrato Selection in a Box -->
             <div class="border border-gray-300 p-4 rounded-lg mt-4">
                 <label for="contractSelect" class="block text-gray-400 mb-2">Seleccione un contrato de trabajo:</label>
@@ -46,6 +41,11 @@
 
         <!-- Chat Area -->
         <main class="w-5/6 bg-gray-800 text-white p-6 relative flex flex-col">
+            <!-- Botón de inicio de sesión de Google (ubicado en la parte superior derecha) -->
+            <div class="absolute top-4 right-4">
+                <button id="googleSignInBtn" class="bg-blue-200 text-black py-2 px-4 rounded-lg">Iniciar sesión con Google</button>
+            </div>
+
             <!-- Chat Container -->
             <div id="chatContainer" class="space-y-6 pb-20 mb-6 overflow-y-auto"
                 style="max-height: calc(100vh - 200px);">
@@ -135,6 +135,7 @@
 </body>
 
 </html>
+
 
 
 
