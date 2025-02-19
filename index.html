@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabIA - AirBiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body class="bg-gray-100 font-sans">
@@ -18,7 +19,6 @@
                 <p class="text-gray-200 text-center text-sm">Tu asistente legal inteligente</p>
             </div>
 
-            <!-- Contrato Selection in a Box -->
             <div class="border border-gray-300 p-4 rounded-lg mt-4">
                 <label for="contractSelect" class="block text-gray-400 mb-2">Seleccione un contrato de trabajo:</label>
                 <select id="contractSelect"
@@ -30,29 +30,22 @@
                 </select>
             </div>
 
-            <!-- Logo en la parte inferior -->
             <img src="airbiz.png" alt="AirBiz Logo"
                 class="absolute bottom-4 left-6 w-24 h-auto filter invert brightness-100 grayscale">
-
         </aside>
 
         <!-- Chat Area -->
         <main class="w-5/6 bg-gray-800 text-white p-6 relative flex flex-col">
-            <!-- Botón de Iniciar Sesión en la parte superior derecha -->
-            <div class="absolute top-4 right-8">
-                <button id="loginButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg focus:outline-none">
-                    Iniciar sesión
-                </button>
+            <!-- Google Sign-In Button -->
+            <div id="g_id_onload" data-client_id="TU_CLIENT_ID" data-callback="handleCredentialResponse"></div>
+            <div class="absolute top-4 right-8" id="loginButton">
+                <div class="g_id_signin" data-type="standard" data-theme="outline" data-text="sign_in"></div>
             </div>
 
-            <!-- Chat Container -->
-            <div id="chatContainer" class="space-y-6 pb-20 mb-6 overflow-y-auto"
-                style="max-height: calc(100vh - 200px);">
-                <p class="text-gray-400 text-center">Inicia una consulta seleccionando un contrato de trabajo y
-                    escribiendo tu pregunta.</p>
+            <div id="chatContainer" class="space-y-6 pb-20 mb-6 overflow-y-auto" style="max-height: calc(100vh - 200px);">
+                <p class="text-gray-400 text-center">Inicia una consulta seleccionando un contrato de trabajo y escribiendo tu pregunta.</p>
             </div>
 
-            <!-- Query Form Fixed at the Bottom -->
             <form id="queryForm"
                 class="fixed bottom-14 left-[16.67%] right-0 w-[70%] mx-auto bg-gray-800 p-4 flex items-center justify-between rounded-lg">
                 <textarea id="queryInput"
@@ -60,7 +53,6 @@
                     placeholder="Escribe tu consulta aquí..." rows="1" required></textarea>
             </form>
 
-            <!-- Footer -->
             <footer class="fixed bottom-0 left-1/6 w-5/6 text-center p-2 text-gray-400 text-sm">
                 © 2025 AirBiz. Todos los derechos reservados.
             </footer>
@@ -68,12 +60,12 @@
     </div>
 
     <script>
-        // Función para generar un UUID (identificador único)
+        let userToken = null; // Almacenar el token del usuario
+
         function generateSessionId() {
-            return crypto.randomUUID(); // Requiere navegadores modernos
+            return crypto.randomUUID();
         }
 
-        // Obtener o crear el session_id
         function getSessionId() {
             let sessionId = localStorage.getItem('session_id');
             if (!sessionId) {
@@ -83,11 +75,15 @@
             return sessionId;
         }
 
+        function handleCredentialResponse(response) {
+            userToken = response.credential; // Almacena el token de Google
+            console.log('Usuario autenticado con Google:', response);
+        }
+
         const form = document.getElementById('queryForm');
         const queryInput = document.getElementById('queryInput');
         const contractSelect = document.getElementById('contractSelect');
         const chatContainer = document.getElementById('chatContainer');
-        const loginButton = document.getElementById('loginButton'); // Botón de Iniciar sesión
 
         queryInput.addEventListener('keydown', async (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -95,18 +91,18 @@
 
                 const contract = contractSelect.value;
                 const query = queryInput.value.trim();
-                const sessionId = getSessionId(); // Obtener el session_id
+                const sessionId = getSessionId();
 
                 if (!contract) {
                     alert('Por favor, selecciona un contrato antes de realizar la consulta.');
                     return;
                 }
 
-                if (!query) {
+                if (!query || !userToken) {
+                    alert('Debes iniciar sesión con Google para continuar.');
                     return;
                 }
 
-                // Mostrar la pregunta en el chat
                 const questionBox = document.createElement('div');
                 questionBox.className = 'bg-gray-700 p-4 rounded-lg shadow-md text-gray-200 max-w-[60%] ml-auto mr-20';
                 questionBox.innerHTML = `<strong>Pregunta:</strong><p>${query}</p>`;
@@ -120,35 +116,26 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ query, contract, session_id: sessionId }) // Se envía el session_id
+                        body: JSON.stringify({ query, contract, session_id: sessionId, token: userToken })
                     });
 
                     if (!res.ok) throw new Error('Error al procesar la solicitud.');
 
                     const data = await res.json();
 
-                    // Mostrar la respuesta en el chat
                     const responseBox = document.createElement('div');
                     responseBox.className = 'bg-gray-700 p-4 rounded-lg shadow-md text-gray-200 max-w-[60%] mr-auto ml-20';
                     responseBox.innerHTML = `<strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>`;
                     chatContainer.appendChild(responseBox);
                 } catch (error) {
-                    // Mostrar un mensaje de error
                     const errorBox = document.createElement('div');
                     errorBox.className = 'bg-red-200 p-4 rounded-lg shadow-md text-red-700 max-w-[60%] mx-auto';
                     errorBox.innerHTML = `<strong>Error:</strong><p>Hubo un problema con la solicitud. Intenta nuevamente más tarde.</p>`;
                     chatContainer.appendChild(errorBox);
                 }
 
-                // Hacer scroll al final del chat
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-        });
-
-        // Lógica para manejar el botón de "Iniciar sesión"
-        loginButton.addEventListener('click', () => {
-            alert("Iniciar sesión");
-            // Aquí puedes agregar la lógica de inicio de sesión (autenticación, redirección, etc.)
         });
     </script>
 </body>
