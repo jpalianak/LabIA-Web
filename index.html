@@ -126,7 +126,8 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ query, contract, session_id: sessionId, user_email: userEmail })
+                        // body: JSON.stringify({ query, contract, session_id: sessionId, user_email: userEmail })
+                        body: JSON.stringify({ query, contract, session_id: sessionId })
                     });
 
                     if (!res.ok) throw new Error('Error al procesar la solicitud.');
