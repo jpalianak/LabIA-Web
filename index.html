@@ -6,21 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabIA - AirBiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Sign-In -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body class="bg-gray-100 font-sans">
+    <!-- Main Layout -->
     <div class="flex min-h-screen">
+        <!-- Sidebar -->
         <aside class="relative w-1/6 bg-gray-900 text-white shadow-md p-4 flex flex-col">
             <div class="flex flex-col items-center w-full mb-6">
-                <h1 class="text-7xl font-bold text-gray-200 text-center mt-4">LabIA</h1>
+                <h1 class="text-7xl font-bold font-sans text-gray-200 text-center mt-4">LabIA</h1>
                 <p class="text-gray-200 text-center text-sm">Tu asistente legal inteligente</p>
             </div>
 
+            <!-- Contrato Selection in a Box -->
             <div class="border border-gray-300 p-4 rounded-lg mt-4">
                 <label for="contractSelect" class="block text-gray-400 mb-2">Seleccione un contrato de trabajo:</label>
-                <select id="contractSelect" class="w-full p-2 border border-gray-700 bg-gray-700 text-gray-400 rounded-lg">
+                <select id="contractSelect"
+                    class="w-full p-2 border border-gray-700 bg-gray-700 text-gray-400 rounded-lg focus:ring focus:ring-blue-300">
                     <option value="">Seleccione...</option>
                     <option value="contract1">Contrato 1</option>
                     <option value="contract2">Contrato 2</option>
@@ -28,23 +31,37 @@
                 </select>
             </div>
 
-            <img src="airbiz.png" alt="AirBiz Logo" class="absolute bottom-4 left-6 w-24 h-auto filter invert">
+            <!-- Logo en la parte inferior -->
+            <img src="airbiz.png" alt="AirBiz Logo"
+                class="absolute bottom-4 left-6 w-24 h-auto filter invert brightness-100 grayscale">
+
         </aside>
 
+        <!-- Chat Area -->
         <main class="w-5/6 bg-gray-800 text-white p-6 relative flex flex-col">
-            <!-- Botón de Iniciar Sesión -->
+            <!-- Botón de Iniciar Sesión en la parte superior derecha -->
             <div id="loginContainer" class="absolute top-4 right-8">
-                <div id="loginButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer">Iniciar sesión</div>
+                <button id="loginButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg focus:outline-none">
+                    Iniciar sesión
+                </button>
             </div>
 
-            <div id="chatContainer" class="space-y-6 pb-20 mb-6 overflow-y-auto" style="max-height: calc(100vh - 200px);">
-                <p class="text-gray-400 text-center">Inicia una consulta seleccionando un contrato de trabajo y escribiendo tu pregunta.</p>
+            <!-- Chat Container -->
+            <div id="chatContainer" class="space-y-6 pb-20 mb-6 overflow-y-auto"
+                style="max-height: calc(100vh - 200px);">
+                <p class="text-gray-400 text-center">Inicia una consulta seleccionando un contrato de trabajo y
+                    escribiendo tu pregunta.</p>
             </div>
 
-            <form id="queryForm" class="fixed bottom-14 left-[16.67%] right-0 w-[70%] mx-auto p-4 flex items-center rounded-lg">
-                <textarea id="queryInput" class="w-full p-3 bg-gray-700 text-gray-200 rounded-lg resize-none" placeholder="Escribe tu consulta aquí..." rows="1" required></textarea>
+            <!-- Query Form Fixed at the Bottom -->
+            <form id="queryForm"
+                class="fixed bottom-14 left-[16.67%] right-0 w-[70%] mx-auto bg-gray-800 p-4 flex items-center justify-between rounded-lg">
+                <textarea id="queryInput"
+                    class="w-full p-3 border border-gray-800 bg-gray-700 text-gray-200 rounded-lg focus:ring focus:ring-blue-300 resize-none"
+                    placeholder="Escribe tu consulta aquí..." rows="1" required></textarea>
             </form>
 
+            <!-- Footer -->
             <footer class="fixed bottom-0 left-1/6 w-5/6 text-center p-2 text-gray-400 text-sm">
                 © 2025 AirBiz. Todos los derechos reservados.
             </footer>
@@ -52,10 +69,14 @@
     </div>
 
     <script>
+        function generateSessionId() {
+            return crypto.randomUUID();
+        }
+
         function getSessionId() {
             let sessionId = localStorage.getItem('session_id');
             if (!sessionId) {
-                sessionId = crypto.randomUUID();
+                sessionId = generateSessionId();
                 localStorage.setItem('session_id', sessionId);
             }
             return sessionId;
@@ -66,39 +87,53 @@
         const contractSelect = document.getElementById('contractSelect');
         const chatContainer = document.getElementById('chatContainer');
         const loginButton = document.getElementById('loginButton');
+        const loginContainer = document.getElementById('loginContainer');
 
         queryInput.addEventListener('keydown', async (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
+
                 const contract = contractSelect.value;
                 const query = queryInput.value.trim();
                 const sessionId = getSessionId();
 
-                if (!contract) return alert('Por favor, selecciona un contrato.');
-                if (!query) return;
+                if (!contract) {
+                    alert('Por favor, selecciona un contrato antes de realizar la consulta.');
+                    return;
+                }
+
+                if (!query) {
+                    return;
+                }
 
                 const questionBox = document.createElement('div');
-                questionBox.className = 'bg-gray-700 p-4 rounded-lg max-w-[60%] ml-auto mr-20';
+                questionBox.className = 'bg-gray-700 p-4 rounded-lg shadow-md text-gray-200 max-w-[60%] ml-auto mr-20';
                 questionBox.innerHTML = `<strong>Pregunta:</strong><p>${query}</p>`;
                 chatContainer.appendChild(questionBox);
+
                 queryInput.value = '';
 
                 try {
                     const res = await fetch('https://fzfi0gugng.execute-api.us-east-1.amazonaws.com/Prod/query', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify({ query, contract, session_id: sessionId })
                     });
 
+                    if (!res.ok) throw new Error('Error al procesar la solicitud.');
+
                     const data = await res.json();
+
                     const responseBox = document.createElement('div');
-                    responseBox.className = 'bg-gray-700 p-4 rounded-lg max-w-[60%] mr-auto ml-20';
+                    responseBox.className = 'bg-gray-700 p-4 rounded-lg shadow-md text-gray-200 max-w-[60%] mr-auto ml-20';
                     responseBox.innerHTML = `<strong>Respuesta:</strong><p>${data.answer || 'Sin respuesta disponible.'}</p>`;
                     chatContainer.appendChild(responseBox);
                 } catch (error) {
                     const errorBox = document.createElement('div');
-                    errorBox.className = 'bg-red-200 p-4 rounded-lg text-red-700 max-w-[60%] mx-auto';
-                    errorBox.innerHTML = `<strong>Error:</strong><p>Hubo un problema con la solicitud.</p>`;
+                    errorBox.className = 'bg-red-200 p-4 rounded-lg shadow-md text-red-700 max-w-[60%] mx-auto';
+                    errorBox.innerHTML = `<strong>Error:</strong><p>Hubo un problema con la solicitud. Intenta nuevamente más tarde.</p>`;
                     chatContainer.appendChild(errorBox);
                 }
 
@@ -106,27 +141,20 @@
             }
         });
 
-        function onGoogleSignIn(response) {
-            const data = JSON.parse(atob(response.credential.split('.')[1]));
-            const { name, email, picture } = data;
+        loginButton.addEventListener('click', () => {
+            google.accounts.id.prompt();
+        });
 
-            loginButton.innerHTML = `<img src="${picture}" alt="Perfil" class="w-10 h-10 rounded-full"> <span>${name}</span>`;
-            loginButton.className = 'flex items-center gap-2';
-            localStorage.setItem('user_email', email);
+        function handleCredentialResponse(response) {
+            const userInfo = JSON.parse(atob(response.credential.split('.')[1]));
+            loginContainer.innerHTML = `<img src="${userInfo.picture}" class="w-10 h-10 rounded-full" title="${userInfo.email}">`;
         }
 
         window.onload = () => {
             google.accounts.id.initialize({
-                client_id: 'TU_CLIENT_ID',
-                callback: onGoogleSignIn
+                client_id: '554337460533-88ds3l81v3rmhufv2td4aq9qq26gts6n.apps.googleusercontent.com',
+                callback: handleCredentialResponse
             });
-
-            google.accounts.id.renderButton(
-                document.getElementById('loginButton'),
-                { theme: 'outline', size: 'large' }
-            );
-
-            google.accounts.id.prompt();
         };
     </script>
 </body>
