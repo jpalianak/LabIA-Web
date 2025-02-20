@@ -89,9 +89,16 @@
         const loginButton = document.getElementById('loginButton');
         const loginContainer = document.getElementById('loginContainer');
 
+        let userLoggedIn = false;  // Controla si el usuario está autenticado
+
         queryInput.addEventListener('keydown', async (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
+
+                if (!userLoggedIn) {
+                    alert('Debes iniciar sesión antes de enviar una consulta.');
+                    return;
+                }
 
                 const contract = contractSelect.value;
                 const query = queryInput.value.trim();
@@ -147,6 +154,7 @@
 
         function handleCredentialResponse(response) {
             const userInfo = JSON.parse(atob(response.credential.split('.')[1]));
+            userLoggedIn = true;  // Marca al usuario como autenticado
             loginContainer.innerHTML = `<img src="${userInfo.picture}" class="w-10 h-10 rounded-full" title="${userInfo.email}">`;
         }
 
@@ -160,6 +168,7 @@
 </body>
 
 </html>
+
 
 
 
