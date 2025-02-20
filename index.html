@@ -120,6 +120,8 @@
 
                 queryInput.value = '';
 
+                console.log('Enviando solicitud...');
+                
                 try {
                     const res = await fetch('https://fzfi0gugng.execute-api.us-east-1.amazonaws.com/Prod/query', {
                         method: 'POST',
